@@ -1,4 +1,4 @@
-django==3.1
+django==3.1.8
 pytest==5.4.3
 pytest-django==3.8.0
 pytest-mock==3.1.1
