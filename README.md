@@ -26,6 +26,14 @@ Verify this works with `python3 --version` and `python3 -m pip -V`. You should s
 ```
 % python3 -m pip install -r requirements.txt
 ```
+### Create a Secret Key
+
+Using a password manager or other cryptographically sound method to generate a secret key and add it to the environment. Save this secret key somewhere safe to reuse in your local environment.
+
+```
+% export SECRET_KEY="DADB0D"
+```
+
 
 ### Migrate
 
