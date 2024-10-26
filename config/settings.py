@@ -48,6 +48,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_SSL_REDIRECT = True
+
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
