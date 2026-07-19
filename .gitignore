@@ -1,5 +1,14 @@
 .idea/
 secrets.txt
+.DS_Store
+
+# Docker secrets
+secret_key.txt
+db_password.txt
+email_api_key.txt
+
+# Collected static files
+/staticfiles/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

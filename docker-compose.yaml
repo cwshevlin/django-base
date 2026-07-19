@@ -1,0 +1,59 @@
+services:
+  database:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: pg
+    secrets:
+      - db_password
+    ports:
+      # Published so the local-venv workflow (runserver/pytest outside Docker)
+      # can reach Postgres at localhost:5432.
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d pg -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      # Host port is per-project (other projects' containers also expose 8000);
+      # point Caddy/the tunnel at this port. The container port stays 8000.
+      - "8003:8000"
+    environment:
+      DEBUG: "1"  # set to "0" in production
+      SECRET_KEY_FILE: /run/secrets/secret_key
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: pg
+      RESEND_API_KEY_FILE: /run/secrets/email_api_key
+    secrets:
+      - secret_key
+      - db_password
+      - email_api_key
+    volumes:
+      - ./:/app
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+
+secrets:
+  secret_key:
+    file: ./secret_key.txt
+  db_password:
+    file: ./db_password.txt
+  email_api_key:
+    file: ./email_api_key.txt
