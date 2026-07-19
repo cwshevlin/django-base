@@ -14,6 +14,28 @@ An opinionated Django starter: Postgres + Docker Compose, DRF at `api/v1/` with 
 - **Model conventions** in `config/models.py`: `UUIDTimeStampedModel` (uuid7 PK + timestamps) and `BaseModel` (adds soft delete)
 - **pytest + coverage**, black, pylint
 
+## Decisions
+
+These choices were mined from bike-maps (the first project to outgrow the old template) and reviewed one-by-one in July 2026.
+
+| Decision | Rationale |
+|---|---|
+| Postgres 17 in Docker, psycopg 3 | Same engine in dev and prod; psycopg 3 is Django 6's preferred driver and its binary wheel needs no system libs |
+| Full compose (gunicorn + db) with Docker secrets | One `docker compose up` runs the real stack; `_read_secret()` reads `<NAME>_FILE` with env-var fallback |
+| Resend via Anymail, console when DEBUG | Anymail keeps `send_mail()`/password-reset untouched; bike-maps had the resend SDK installed but never wired |
+| WhiteNoise manifest statics | No separate static server behind the Cloudflare tunnel; hashed filenames give cache-busting for free |
+| DRF at versioned `api/v1/`, package per resource | Versioning is free from day one; each resource owns its serializers/views/urls |
+| SimpleJWT (60-min access, 90-day rotating refresh) + session auth | JWT for iOS/Android clients, sessions for the browsable API |
+| drf-spectacular | Swagger/Redoc docs the mobile clients actually use (must be named `SPECTACULAR_SETTINGS` — the `DRF_`-prefixed name is silently ignored) |
+| UUIDv7 PKs, `created_at`/`updated_at`, soft delete | Time-ordered non-guessable IDs (stdlib `uuid.uuid7`, hence Python ≥ 3.14); `objects` is unfiltered — `.alive()` is explicit |
+| `authn` app name for the custom user | `auth` collides with `django.contrib.auth`'s app label (the old template's user model never actually worked) |
+| django-auditlog + `/history/…` view | Change history in admin and on-site; excludes `password`/`last_login` from logs |
+| Env-driven `DEBUG`, single flat `settings.py`, raw `os.environ` | Secrets hard-fail in prod, fall back in dev; no django-environ dependency |
+| Host port is per-project (8003 here) | Every project on this box publishes its own port for Caddy/the tunnel; 8000 belongs to bike-maps |
+| black + pylint + pytest with coverage | House toolchain; pylint without pylint-django flags a few known Django false positives |
+
+**Deliberately left out** (add per-project when needed): django-filter and API throttling defaults, django-cors-headers, phone/OTP auth (Twilio), Pico CSS / design tokens, dark-mode toggle, a shared `Visibility` enum. The frontend ships only a minimal `base.html` and the `message_box` tag.
+
 ## Quickstart (Docker)
 
 1. Create the three secret files (gitignored):
