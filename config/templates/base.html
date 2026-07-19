@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin">
+    <title>{% block title %}{% endblock %}</title>
+    {% block meta %}{% endblock %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
+    {% block styles %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</head>
+<body>
+    <header class="container">
+        <nav>
+            <ul>
+                <li><a href="/">home</a></li>
+            </ul>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">profile</a></li>
+                    <form action="/accounts/logout/" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <li><input type="submit" value="logout"></li>
+                    </form>
+                {% else %}
+                    <li><a href="/accounts/login/">login</a></li>
+                    <li><a href="{% url 'create_account' %}">create account</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <nav aria-label="breadcrumb">
+            {% block breadcrumbs %}{% endblock %}
+        </nav>
+    </header>
+    {% block messages %}
+    {% if messages %}
+    <div class="container">
+        {% load messages %}
+        {% for message in messages %}
+            {% message_box level=message.tags %}{{ message }}{% endmessage_box %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endblock %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

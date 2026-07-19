@@ -1,0 +1,14 @@
+.git
+.gitignore
+env/
+db.sqlite3
+staticfiles/
+__pycache__/
+*.pyc
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+secret_key.txt
+db_password.txt
+email_api_key.txt

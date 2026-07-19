@@ -1,0 +1,33 @@
+.container {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+}
+
+.message-box {
+    border: 1px solid;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+}
+
+.message-box-summary {
+    font-weight: bold;
+}
+
+.message-box-success { border-color: #2e7d32; background: #edf7ed; }
+.message-box-info    { border-color: #0288d1; background: #e5f6fd; }
+.message-box-warning { border-color: #ed6c02; background: #fff4e5; }
+.message-box-error,
+.message-box-debug   { border-color: #d32f2f; background: #fdeded; }

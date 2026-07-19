@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}History: {{ model_verbose_name|capfirst }}{% endblock %}
+{% block breadcrumbs %}
+<ul>
+    <li>History</li>
+    <li>{{ model_verbose_name|capfirst }}</li>
+</ul>
+{% endblock %}
+{% block content %}
+<article>
+    <header>
+        <h1>Edit history</h1>
+        <p>{{ model_verbose_name|capfirst }} <code>{{ object_pk }}</code></p>
+    </header>
+
+    {% if log_entries %}
+    <table>
+        <thead>
+            <tr>
+                <th>When</th>
+                <th>Who</th>
+                <th>Action</th>
+                <th>Changes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in log_entries %}
+            <tr>
+                <td>{{ entry.timestamp|date:"N j, Y, P" }}</td>
+                <td>
+                    {% if entry.actor %}
+                        {{ entry.actor.username }}
+                    {% else %}
+                        <em>system</em>
+                    {% endif %}
+                </td>
+                <td>{{ entry.get_action_display }}</td>
+                <td>
+                    {% if entry.changes_dict %}
+                    <dl>
+                        {% for field, values in entry.changes_dict.items %}
+                        <dt>{{ field }}</dt>
+                        <dd><code>{{ values.0|default:"—" }}</code> &rarr; <code>{{ values.1|default:"—" }}</code></dd>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <nav>
+        <ul>
+            {% if page_obj.has_previous %}<li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>{% endif %}
+            <li>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</li>
+            {% if page_obj.has_next %}<li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <p>No history recorded yet.</p>
+    {% endif %}
+</article>
+{% endblock %}
